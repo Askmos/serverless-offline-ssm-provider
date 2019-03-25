@@ -25,21 +25,18 @@ class ServerlessOfflineSSMProvider {
         if (service !== 'SSM' || method !== 'getParameter')
           return request(service, method, params, options);
 
-        return request(service, method, params, options).catch(error => {
-          const {Name} = params;
-          const Value = this.values[Name];
-
-          if (!Value) return Promise.reject(error);
-
-          return Promise.resolve({
-            Parameter: {
-              Value
-            }
-          });
+        const {Name} = params;
+        const Value = this.values[Name];
+        if (!Value) return request(service, method, params, options);
+        return Promise.resolve({
+          Parameter: {
+            Value
+          }
         });
       };
 
       this.serverless.setProvider('aws', aws);
+      console.log('Mock ssm provider set up');
     } catch (e) {
       if (e.code === 'ENOENT') {
         console.log('Skipping serverless-offline-ssm-provider as env file cannot be found')
