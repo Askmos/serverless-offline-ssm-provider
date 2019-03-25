@@ -15,30 +15,34 @@ class ServerlessOfflineSSMProvider {
   constructor(serverless) {
     this.serverless = serverless;
     this.config = this.serverless.service.custom['serverless-offline-ssm-provider'];
-    this.values = this.config ? getValues(this.config.file) : getValues();
+    try {
+      this.values = this.config ? getValues(this.config.file) : getValues();
 
-    const aws = this.serverless.getProvider('aws');
-    const request = aws.request.bind(aws);
+      const aws = this.serverless.getProvider('aws');
+      const request = aws.request.bind(aws);
 
-    aws.request = (service, method, params, options) => {
-      if (service !== 'SSM' || method !== 'getParameter')
-        return request(service, method, params, options);
+      aws.request = (service, method, params, options) => {
+        if (service !== 'SSM' || method !== 'getParameter')
+          return request(service, method, params, options);
 
-      return request(service, method, params, options).catch(error => {
-        const {Name} = params;
-        const Value = this.values[Name];
+        return request(service, method, params, options).catch(error => {
+          const {Name} = params;
+          const Value = this.values[Name];
 
-        if (!Value) return Promise.reject(error);
+          if (!Value) return Promise.reject(error);
 
-        return Promise.resolve({
-          Parameter: {
-            Value
-          }
+          return Promise.resolve({
+            Parameter: {
+              Value
+            }
+          });
         });
-      });
-    };
+      };
 
-    this.serverless.setProvider('aws', aws);
+      this.serverless.setProvider('aws', aws);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 
