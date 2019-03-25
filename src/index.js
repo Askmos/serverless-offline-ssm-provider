@@ -41,7 +41,11 @@ class ServerlessOfflineSSMProvider {
 
       this.serverless.setProvider('aws', aws);
     } catch (e) {
-      console.error(e);
+      if (e.code === 'ENOENT') {
+        console.log('Skipping serverless-offline-ssm-provider as env file cannot be found')
+      } else {
+        console.error(e);
+      }
     }
   }
 }
