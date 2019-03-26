@@ -26,7 +26,7 @@ class ServerlessOfflineSSMProvider {
           return request(service, method, params, options);
 
         const {Name} = params;
-        const Value = this.values[Name];
+        let Value = this.values[Name];
         if (Value === undefined) return request(service, method, params, options);
         return Promise.resolve({
           Parameter: {
