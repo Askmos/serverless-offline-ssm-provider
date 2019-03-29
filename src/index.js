@@ -1,7 +1,6 @@
 const fs = require('fs');
 
 const getValues = (path = '.env') => {
-  if (process.env.FAKE_ENV) return {};
   return fs
     .readFileSync(path, {encoding: 'utf-8'})
     .trim()
@@ -29,7 +28,8 @@ class ServerlessOfflineSSMProvider {
 
         const {Name} = params;
         let Value = this.values[Name];
-        if (Value === undefined) return request(service, method, params, options);
+        console.log('==!! undefined ssm:' + Name + ' !!==')
+        if (Value === undefined) Promise.resolve({ Parameter: { Value: 'undefined' }});
         return Promise.resolve({
           Parameter: {
             Value
