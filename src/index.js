@@ -1,7 +1,8 @@
 const fs = require('fs');
 
-const getValues = (path = '.env') =>
-  fs
+const getValues = (path = '.env') => {
+  if (process.env.FAKE_ENV) return {};
+  return fs
     .readFileSync(path, {encoding: 'utf-8'})
     .trim()
     .split('\n')
@@ -10,6 +11,7 @@ const getValues = (path = '.env') =>
       acc[key] = value;
       return acc;
     }, {});
+};
 
 class ServerlessOfflineSSMProvider {
   constructor(serverless) {
