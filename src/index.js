@@ -30,7 +30,7 @@ class ServerlessOfflineSSMProvider {
         let Value = this.values[Name];
         if (Value === undefined) {
           console.log('==!! undefined ssm:' + Name + ' !!==')
-          Promise.resolve({
+          return Promise.resolve({
             Parameter: {
               Value: 'undef'
             }
